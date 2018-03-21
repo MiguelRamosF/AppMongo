@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>MongoApp</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <h1 class="title">MongoApp - NoSQL Project</h1>
+    <div id="homepage">
+        <h1>Search cities near your area</h1>
+        <div id="cities"></div>
+    </div>
+
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@15/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+    <!-- Create React Component -->
+    <script type="text/babel">
+        var Cities = React.createClass({
+
+            getInitialState: function(){
+                return({
+                    cities: []
+                });
+            },
+            render: function(){
+                var cities = this.state.cities;
+                cities = cities.map((city,index)=>{
+                    return(
+                        <tr key={index}>
+                    <td className="name">{city.name}</td>
+                    <td className="location">{city.location.coordinates}</td>
+                    <td className="country">{city.country}</td>
+                    <td className="population">{city.population}</td>
+                    <td className="timezone">{city.timeZone}</td>
+                    <td className="dist">{Math.floor(city.dist.calculated / 1000)} km</td>
+                    <td><button onClick={this.onDelete.bind(this,city,index)} className="delete" >Delete</button></td>
+                        </tr>
+   
+                    );
+                });
+                return(
+                    <div id="cities-container">
+                        <form id="Search" onSubmit={this.handleSubmitSearch}>
+                            <label>Enter your Longitude:</label>
+                            <input type="text" ref="lng" placeholder="example for Paris: 2.3488" required />
+                            <label>Enter your Latitude:</label>
+                            <input type="text" ref="lat" placeholder="example for Paris: 48.8534" required />
+                            <input type="submit" value="Find Cities" />
+                        </form>
+                        <form id="Add" onSubmit={this.handleSubmitAdd}>
+                            <h1>A city you know is not listed? Add it !</h1>
+                            <label>Enter the city name:</label>
+                            <input type="text" ref="name" placeholder="example: KL Sentral" required />
+                            <label>Enter the city location (lng):</label>
+                            <input type="text" ref="locationlng" placeholder="example: 2.486" required />
+                            <label>Enter the city location (lat)</label>
+                            <input type="text" ref="locationlat" placeholder="example: 32.476" required />
+                            <label>Enter the country</label>
+                            <input type="text" ref="country" placeholder="example: MY for Malaysia" required />
+                            <label>Enter the population:</label>
+                            <input type="text" ref="population" placeholder="example: 42000" required />
+                            <label>Enter the timeZone:</label>
+                            <input type="text" ref="timeZone" placeholder="example: Asia/Kuala_Lumpur" required />
+                            <input type="submit" value="Add City" />
+                        </form>
+            
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Country</th>
+                                <th>Population</th>
+                                <th>TimeZone</th>
+                                <th>Distance</th>
+                             <th>Option</th>
+                            </tr>
+                            {cities}
+                        </table>   
+                    </div>                
+                );
+            },
+
+            handleSubmitSearch: function(e){
+                e.preventDefault();
+                var lng = this.refs.lng.value;
+                var lat = this.refs.lat.value;
+                fetch('/api/cities?lng=' + lng + '&lat=' + lat).then(function(data){
+                    return data.json();
+                }).then( json => {
+                    this.setState({
+                        cities: json
+                    });
+                    console.log(json);
+                });
+            },
+
+            onDelete: function(city,index){
+                var newCities = this.state.cities;
+                newCities.splice(index,1);
+                var id = city._id;
+                var myInit = { method: 'DELETE',
+                mode: 'cors',
+                cache: 'default' };
+
+                fetch('/api/cities/'+id,myInit).then(function(data){
+                    return data.json();
+                }).then( json => {
+                    this.setState({
+                        cities: newCities
+                    });
+                    alert( "Deleted" +JSON.stringify( json ) )
+                    console.log(json);
+                });
+            },
+
+            handleSubmitAdd: function(e){
+                e.preventDefault();
+                var name = this.refs.name.value;
+                var locationlng = this.refs.locationlng.value;
+                var locationlat = this.refs.locationlat.value;
+                var population = this.refs.population.value;
+                var timeZone = this.refs.timeZone.value;
+                var country = this.refs.country.value;
+                
+                fetch('api/cities/', {
+                    method: 'post',
+                    headers: {
+                     'Accept': 'application/json, text/plain, */*',
+                     'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({timeZone:timeZone,
+	                country:country,
+	                name:name,
+                    population:population,
+                    location:{"type":"Point","coordinates":[locationlng,locationlat]}})
+                }).then(res=>res.json())
+                  .then(res => alert( JSON.stringify( res ) ))
+
+            }
+
+        });
+        ReactDOM.render(<Cities />, document.getElementById('cities'));
+        </script>
+
+</body>
+
+</html>
