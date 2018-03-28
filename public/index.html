@@ -5,14 +5,13 @@
     <meta charset="utf-8">
     <title>MongoApp</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-    <link href="/styles.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet" />
 </head>
 
 <body>
 
     <h1 class="title">MongoApp - NoSQL Project</h1>
     <div id="homepage">
-        <h1>Search cities near your area</h1>
         <div id="cities"></div>
     </div>
 
@@ -20,13 +19,17 @@
     <script src="https://unpkg.com/react@15/dist/react.js"></script>
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
 
+
     <!-- Create React Component -->
     <script type="text/babel">
         var Cities = React.createClass({
 
             getInitialState: function(){
                 return({
-                    cities: []
+                    cities: [],
+                    cities_unchanged : [],
+                    filterText: '',
+                    near: false
                 });
             },
             render: function(){
@@ -35,19 +38,39 @@
                     return(
                         <tr key={index}>
                     <td className="name">{city.name}</td>
-                    <td className="location">{city.location.coordinates}</td>
+                    {
+                        city.location && <td className="location">{city.location.coordinates}</td>
+                    }
                     <td className="country">{city.country}</td>
                     <td className="population">{city.population}</td>
                     <td className="timezone">{city.timeZone}</td>
-                    <td className="dist">{Math.floor(city.dist.calculated / 1000)} km</td>
+                    {
+                        city.dist && <td className="dist">{Math.floor(city.dist.calculated / 1000)} km</td>
+                    }
                     <td><button onClick={this.onDelete.bind(this,city,index)} className="delete" >Delete</button></td>
                         </tr>
    
                     );
                 });
+                //this.state.cities = this.state.cities_unchanged;
+
                 return(
                     <div id="cities-container">
-                        <form id="Search" onSubmit={this.handleSubmitSearch}>
+                        <div id="Queries">
+                        <form id="SearchAll" onSubmit={this.handleSubmitSearchAll}>
+                            <h1>Search cities filtered by these parameters</h1>
+                            <label>Enter the name of the city:</label>
+                            <input type="text" ref="name_search" placeholder="example : Paris"  />
+                            <label>Enter the country initials:</label>
+                            <input type="text" ref="country_search" placeholder="example : FR"  />
+                            <label>Enter the population:</label>
+                            <input type="text" ref="population_search" placeholder="example : 49851"  />
+                            <label>Enter the timeZone:</label>
+                            <input type="text" ref="timeZone_search" placeholder="example : Asia/Dubai"  />
+                            <input type="submit" value="Search" />
+                        </form>
+                        <form id="SearchNear" onSubmit={this.handleSubmitSearchNear}>
+                            <h1>Search cities near your area</h1>
                             <label>Enter your Longitude:</label>
                             <input type="text" ref="lng" placeholder="example for Paris: 2.3488" required />
                             <label>Enter your Latitude:</label>
@@ -57,28 +80,30 @@
                         <form id="Add" onSubmit={this.handleSubmitAdd}>
                             <h1>A city you know is not listed? Add it !</h1>
                             <label>Enter the city name:</label>
-                            <input type="text" ref="name" placeholder="example: KL Sentral" required />
+                            <input type="text" ref="name_add" placeholder="example: KL Sentral" required />
                             <label>Enter the city location (lng):</label>
-                            <input type="text" ref="locationlng" placeholder="example: 2.486" required />
+                            <input type="text" ref="locationlng_add" placeholder="example: 2.486" required />
                             <label>Enter the city location (lat)</label>
-                            <input type="text" ref="locationlat" placeholder="example: 32.476" required />
+                            <input type="text" ref="locationlat_add" placeholder="example: 32.476" required />
                             <label>Enter the country</label>
-                            <input type="text" ref="country" placeholder="example: MY for Malaysia" required />
+                            <input type="text" ref="country_add" placeholder="example: MY for Malaysia" required />
                             <label>Enter the population:</label>
-                            <input type="text" ref="population" placeholder="example: 42000" required />
+                            <input type="text" ref="population_add" placeholder="example: 42000" required />
                             <label>Enter the timeZone:</label>
-                            <input type="text" ref="timeZone" placeholder="example: Asia/Kuala_Lumpur" required />
+                            <input type="text" ref="timeZone_add" placeholder="example: Asia/Kuala_Lumpur" required />
                             <input type="submit" value="Add City" />
+                            
                         </form>
-            
+                        </div>
+                        <input id="myInput" type="text" ref="filter_text" onKeyUp={this.handleKeyUp} placeholder="Search for names.." />
                         <table>
                             <tr>
                                 <th>Name</th>
                                 <th>Location</th>
                                 <th>Country</th>
-                                <th>Population</th>
+                                <th onClick={this.handleClickPop}>Population (sort)</th>
                                 <th>TimeZone</th>
-                                <th>Distance</th>
+                                { this.state.near && <th>Distance</th>}
                              <th>Option</th>
                             </tr>
                             {cities}
@@ -87,17 +112,87 @@
                 );
             },
 
-            handleSubmitSearch: function(e){
+            handleClickPop: function(e){
+                e.preventDefault();
+                var cities = this.state.cities;
+                var filtered_cities = cities.sort((a,b)=>{
+                     return a.population - b.population;       
+                    })
+                console.log(filtered_cities);
+                this.setState({
+                        cities: filtered_cities
+                });
+                
+            },
+
+            handleKeyUp: function(e){
+                var cities = this.state.cities_unchanged;
+                var filter_text = this.refs.filter_text.value;
+
+                //if(e.keyCode != 8){
+                //e.preventDefault();
+                
+                    var filtered_cities = cities.filter(city=>{
+                     if (city.name.toUpperCase().indexOf(filter_text.toUpperCase())>-1) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }        
+                    })
+                    this.setState({
+                        cities: filtered_cities,
+                        filterText: filter_text
+                    });
+                    //this.state.cities = this.state.cities_unchanged;
+                    console.log(filter_text)
+                    console.log("1 "+ this.state.cities)
+                    console.log("2 "+ this.state.cities_unchanged)
+
+            },
+            
+
+            handleSubmitSearchAll: function(e){
+                e.preventDefault();
+                var name = this.refs.name_search.value;
+                var country = this.refs.country_search.value;
+                var population = this.refs.population_search.value;
+                var timeZone = this.refs.timeZone_search.value;
+                console.log(name)
+                console.log(country)
+                console.log(population)
+                console.log(timeZone)
+                var endpoint = '/api/cities/all?name=' + name + '&country=' + country + '&population=' + population + '&timeZone=' + timeZone;
+                console.log(endpoint);
+                fetch(endpoint).then(function(data){
+                    console.log(data);
+                    return data.json();
+                }).then( json => {
+                    console.log(json);
+                    this.setState({
+                        cities: json,
+                        cities_unchanged : json,
+                        near: false
+                    });
+                    
+                });
+            },
+
+            handleSubmitSearchNear: function(e){
                 e.preventDefault();
                 var lng = this.refs.lng.value;
                 var lat = this.refs.lat.value;
-                fetch('/api/cities?lng=' + lng + '&lat=' + lat).then(function(data){
+                fetch('/api/cities/near?lng=' + lng + '&lat=' + lat).then(function(data){
+                    console.log(data);
                     return data.json();
                 }).then( json => {
                     this.setState({
-                        cities: json
+                        cities: json,
+                        cities_unchanged: json,
+                        near: true
                     });
                     console.log(json);
+                    //console.log(this.state.near);
                 });
             },
 
@@ -113,7 +208,8 @@
                     return data.json();
                 }).then( json => {
                     this.setState({
-                        cities: newCities
+                        cities: newCities,
+                        cities_unchanged: newCities
                     });
                     alert( "Deleted" +JSON.stringify( json ) )
                     console.log(json);
@@ -122,12 +218,12 @@
 
             handleSubmitAdd: function(e){
                 e.preventDefault();
-                var name = this.refs.name.value;
-                var locationlng = this.refs.locationlng.value;
-                var locationlat = this.refs.locationlat.value;
-                var population = this.refs.population.value;
-                var timeZone = this.refs.timeZone.value;
-                var country = this.refs.country.value;
+                var name = this.refs.name_add.value;
+                var locationlng = this.refs.locationlng_add.value;
+                var locationlat = this.refs.locationlat_add.value;
+                var population = this.refs.population_add.value;
+                var timeZone = this.refs.timeZone_add.value;
+                var country = this.refs.country_add.value;
                 
                 fetch('api/cities/', {
                     method: 'post',

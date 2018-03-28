@@ -5,7 +5,7 @@ body{
     margin: 10px 30px;
 }
 #homepage{
-    max-width: 800px;
+    max-width: 1100px;
     margin: 60px auto;
     padding: 10px 20px;
     background: #fdfdfd;
@@ -32,8 +32,8 @@ label{
     text-align: center;
 }
 form{
-    max-width: 350px;
-    margin: 30px auto;
+    max-width: 340px;
+    margin-left: 25px;
 }
 input[type="submit"]{
     background: #555;
@@ -102,13 +102,42 @@ table {
 
 td, th {
     border: 1px solid #dddddd;
-    text-align: left;
+    text-align: center;
     padding: 8px;
+    cursor: pointer;
 }
 
-tr:nth-child(even) {
-    background-color: #dddddd;
+tr:hover {
+    background-color: #f1f1f1;
 }
+
+#myInput {
+    background-image: url("searchicon.png");
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    width: 30%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+
+}
+
+#SearchAll {
+    float: left;
+}
+#SearchNear {
+    float: left;
+}
+#Add {
+    float: left;
+}
+/*#Queries{
+    margin-left: 10%;
+}*/
+
+
+
 
 
 
