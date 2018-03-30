@@ -28,7 +28,6 @@
                 return({
                     cities: [],
                     cities_unchanged : [],
-                    filterText: '',
                     near: false
                 });
             },
@@ -129,26 +128,22 @@
                 var cities = this.state.cities_unchanged;
                 var filter_text = this.refs.filter_text.value;
 
-                //if(e.keyCode != 8){
-                //e.preventDefault();
                 
-                    var filtered_cities = cities.filter(city=>{
-                     if (city.name.toUpperCase().indexOf(filter_text.toUpperCase())>-1) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }        
-                    })
-                    this.setState({
-                        cities: filtered_cities,
-                        filterText: filter_text
-                    });
-                    //this.state.cities = this.state.cities_unchanged;
-                    console.log(filter_text)
-                    console.log("1 "+ this.state.cities)
-                    console.log("2 "+ this.state.cities_unchanged)
-
+                var filtered_cities = cities.filter(city=>{
+                    if (city.name.toUpperCase().indexOf(filter_text.toUpperCase())>-1) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }        
+                })
+                this.setState({
+                    cities: filtered_cities,
+                });
+                //this.state.cities = this.state.cities_unchanged;
+                // console.log(filter_text)
+                // console.log("1 "+ this.state.cities)
+                // console.log("2 "+ this.state.cities_unchanged)
             },
             
 
