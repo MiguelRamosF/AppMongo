@@ -50,7 +50,7 @@ localhost:4000/index.html
 
 ## Screenshots
 
-![screenshot1](https://raw.githubusercontent.com/MiguelRamosF/MongoApp/master/img/Capture06.JPG)
+![screenshot1](https://raw.githubusercontent.com/MiguelRamosF/AppMongo/master/img/Capture06.JPG)
 
 
 ## License
