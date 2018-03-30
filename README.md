@@ -15,13 +15,15 @@ The built-in features for now are:
 - Sort cities by population
 - Very simple display of cities in the form of a table
 
+For more details, go on the project report in the "report" folder
+
 
 ### Prerequisites
 
 1 - NodeJS and Mongo DB must be installed
 
 2 - Import cities.json in your mongoDB with the following command:
-    mongoimport --db ZIPS --collection cities --file path/cities.json
+    mongoimport --db ZIPS --collection cities --file projectpath/data/cities.json
 
 3 - Mongod must be launched (connection open)
 
