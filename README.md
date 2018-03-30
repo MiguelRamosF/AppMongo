@@ -44,10 +44,10 @@ localhost:4000/index.html
 
 ## Built With
 
-* [Dropwizard](https://reactjs.org/) - Front-end : ReactJS
-* [Maven](https://nodejs.org/) - Back-end : NodeJS
-* [ROME](https://getbootstrap.com/) - Design : Bootstrap, CSS 
-* [ROME](https://www.mongodb.com) Database : Mongo DB, GUI : Studio 3T
+* [ReactJS](https://reactjs.org/) - Front-end : ReactJS
+* [NodeJS](https://nodejs.org/) - Back-end : NodeJS
+* [Bootstrap](https://getbootstrap.com/) - Design : Bootstrap, CSS 
+* [MongoDB](https://www.mongodb.com) Database : Mongo DB, GUI : Studio 3T
 
 
 ## Screenshots
